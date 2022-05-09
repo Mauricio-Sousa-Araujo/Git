@@ -47,3 +47,9 @@
 
 #### Mostra histórico de  comites do mais recente pro mais antigo
 2. git checkout id_versão
+
+#### Limpa arquivos que foram criados que ainda não estão na área de staged
+3. git clean -f
+
+#### Remove o último comite
+4. git reset --hard
