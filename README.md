@@ -51,6 +51,5 @@
 #### Limpa arquivos que foram criados que ainda não estão na área de staged
 3. git clean -f
 
-#### Remove o último comite
+#### Remove as alterações que estão em stage
 4. git reset --hard
-fdsfsd
