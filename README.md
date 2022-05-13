@@ -52,4 +52,10 @@
 3. git clean -f
 
 #### Remove as alterações que estão em stage
-4. git reset --hard
+4. git reset --hard == git restore archive
+
+#### Puxa alterações do repositório remoto
+5. git pull
+
+#### Empurra alterações no repositório remoto
+4. git push
