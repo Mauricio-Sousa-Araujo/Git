@@ -1,3 +1,28 @@
+
+
+
+
+WITH posicao_window AS (
+SELECT 
+   cpf, 
+   dt_sefmento, 
+   gerente,
+   segmento,
+   ROW_NUMBER() OVER (
+      PARTITION BY cpf
+      ORDER BY dt_sefmento
+   ) row_num
+FROM 
+   public."Seg_hist"
+  ) 
+SELECT * FROM  public."Posicao_hist"  s
+JOIN posicao_window pw ON s.cpf = pw.cpf;
+
+
+
+
+
+
 # Git
 
 ## Comandos Básicos de configuração
