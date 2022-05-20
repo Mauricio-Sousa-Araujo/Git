@@ -1,28 +1,3 @@
-
-
-
-
-WITH posicao_window AS (
-SELECT 
-   cpf, 
-   dt_sefmento, 
-   gerente,
-   segmento,
-   ROW_NUMBER() OVER (
-      PARTITION BY cpf
-      ORDER BY dt_sefmento
-   ) row_num
-FROM 
-   public."Seg_hist"
-  ) 
-SELECT * FROM  public."Posicao_hist"  s
-JOIN posicao_window pw ON s.cpf = pw.cpf;
-
-
-
-
-
-
 # Git
 
 ## Comandos Básicos de configuração
@@ -84,3 +59,79 @@ JOIN posicao_window pw ON s.cpf = pw.cpf;
 
 #### Empurra alterações no repositório remoto
 4. git push
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+explain 
+with RANK_STAGE as
+(
+select  *
+		,coalesce (sh.dt_segmento, ph.dt_posicao) as dt
+		,coalesce (sh.cpf, ph.cpf) as cpf_cnpj
+		,case 
+			when gerente is null then '0'		
+			else CAST( row_number() over (partition by coalesce (sh.cpf, ph.cpf) order by coalesce (sh.dt_segmento, ph.dt_posicao)) as varchar )
+		 end row_number 
+from "Posicao_hist" ph  
+	 	full outer join 
+	 "Seg_hist" sh  
+on sh.cpf = ph.cpf and sh.dt_segmento = ph.dt_posicao 
+), CONCAT_ROW_NUMBER as
+(select *
+		,concat( lpad( row_number ,12, '0'), gerente) as gerente_row_number
+from RANK_STAGE
+), final as
+(
+select *
+	   , substring(max(gerente_row_number) over (partition by cpf_cnpj order by dt 
+	   								   rows between unbounded preceding and current row ),13) as gerente_fill
+	   
+from CONCAT_ROW_NUMBER)
+select *
+from final
+where dt_posicao is not null;
+
+
+
+
+
+/*outraaaaaaaaaaaaaaaaaaaaaaaa*/
+explain with POSICAO_SEGMENTACAO as (
+		select  *
+				,coalesce (sh.dt_segmento, ph.dt_posicao) as dt
+				,row_number () over (partition by  ph.dt_posicao, ph.cpf  order by sh.dt_segmento DESC)
+		from "Posicao_hist" ph  
+			 	join 
+			 "Seg_hist" sh  
+		on sh.cpf = ph.cpf and ph.dt_posicao >= sh.dt_segmento  
+)
+select *
+from  POSICAO_SEGMENTACAO
+where row_number = 1;
